@@ -35,7 +35,6 @@ upload.addEventListener('change', () => {
   jumpStartTime = null;
   jumpEndTime = null;
   updateMarks();
-  status.textContent = 'Video geladen.';
 
   // Versuche FPS zu bestimmen (funktioniert nicht in allen Browsern)
   video.addEventListener('loadedmetadata', () => {

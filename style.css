@@ -3,91 +3,92 @@
 .navbar {
   position: sticky;
   top: 0;
-  background: #121212;
+  width: 100%; /* volle Breite ohne Scrollleistenprobleme */
+  background: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 20px;
-  max-width: 600px;
-  margin: 0 auto 30px auto;
-  box-shadow: 0 2px 8px rgba(0, 216, 255, 0.3);
-  border-radius: 8px;
-  z-index: 1000;
+  padding: 12px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10; /* höher, damit Navbar über anderen Elementen liegt */
+  font-weight: 600;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  max-width: none;
 }
 
 .navbar h1 {
   margin: 0;
-  font-weight: 700;
-  letter-spacing: 1.2px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   font-size: 1.5rem;
-  color: #00d8ff;
+  color: #0078d4; /* Blaue Akzentfarbe */
 }
 
 .navbar button {
-  font-size: 1.5rem;
-  padding: 8px 14px;
-  background: linear-gradient(135deg, #00d8ff, #0066cc);
+  font-size: 1.2rem;
+  padding: 6px 14px;
+  background: #0078d4;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   color: white;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 216, 255, 0.6);
-  transition: background 0.3s ease, transform 0.15s ease;
+  box-shadow: none;
+  transition: background 0.2s ease;
   user-select: none;
-}
-
-.navbar button:hover {
-  background: linear-gradient(135deg, #0066cc, #00d8ff);
-  transform: scale(1.1);
-}
-
-.navbar button:active {
-  transform: scale(0.95);
+  font-weight: 600;
+  font-family: inherit;
 }
 
 /* Basis-Styling */
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 0 20px 30px 20px;
+  padding-top: 0;
   max-width: 600px;
   margin: 0 auto;
-  background: #121212;
-  color: #eee;
-  text-align: center;
-  line-height: 1.5;
+  background: #f5f7fa; /* helles, neutrales Grau */
+  color: #1a1a1a; /* dunkles Grau statt reinem Schwarz */
+  text-align: left;
+  line-height: 1.6;
+  font-weight: 400;
 }
 
 h1 {
-  margin-bottom: 25px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  color: #00d8ff;
+  margin-bottom: 24px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #0078d4;
 }
 
 h2 {
   margin-top: 40px;
-  color: #00d8ff;
-  font-weight: 700;
+  color: #0078d4;
+  font-weight: 600;
   font-size: 1.3rem;
 }
+
+/* Video */
 
 video {
   width: 100%;
   max-height: 360px;
-  background: #222;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 216, 255, 0.5);
-  margin-bottom: 10px;
+  background: #e1e4e8; /* hellgrau */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 12px;
   position: relative;
 }
 
+/* Timeline */
+
 .timeline-marks {
   position: relative;
-  height: 10px;
+  height: 8px;
   margin-bottom: 20px;
-  background: #222;
-  border-radius: 4px;
+  background: #dce1e6;
+  border-radius: 6px;
   overflow: visible;
 }
 
@@ -97,49 +98,55 @@ video {
   width: 4px;
   height: 100%;
   border-radius: 2px;
+  opacity: 0.9;
 }
 
 .start-indicator {
-  background: #00ffea;
+  background: #00a1ff;
 }
 
 .end-indicator {
-  background: #b86b4b;
+  background: #ff6f61;
 }
 
 .current-pos-indicator {
-  background: #ffcc00;
+  background: #ffc107;
   width: 2px;
   height: 100%;
   top: 0;
   border-radius: 1px;
   position: absolute;
+  opacity: 0.9;
 }
 
 /* Buttons und Labels */
 
-button, .file-label {
-  background: linear-gradient(135deg, #00d8ff, #0066cc);
+button,
+.file-label {
+  background: #0078d4;
   border: none;
-  padding: 12px 24px;
+  padding: 10px 20px;
   margin: 8px 6px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 216, 255, 0.6);
-  transition: background 0.3s ease, transform 0.15s ease;
+  box-shadow: none;
+  transition: background 0.2s ease;
   user-select: none;
+  font-family: inherit;
+  text-align: center;
 }
 
-button:hover, .file-label:hover {
-  background: linear-gradient(135deg, #0066cc, #00d8ff);
-  transform: scale(1.05);
+button:hover,
+.file-label:hover {
+  background: #005a9e;
 }
 
-button:active, .file-label:active {
-  transform: scale(0.95);
+button:active,
+.file-label:active {
+  background: #004578;
 }
 
 input[type="file"] {
@@ -148,27 +155,21 @@ input[type="file"] {
 
 .file-label {
   display: inline-block;
-  margin-bottom: 20px;
+  margin-bottom: 50px;
+  margin-top: 50px;
 }
+
+/* Controls */
 
 .controls-section {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px; /* Abstand zwischen den Gruppen */
+  gap: 16px;
 }
 
-
-.mark-controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px; /* Abstand zwischen Buttons */
-  max-width: 480px;
-  width: 100%;
-}
-
+.mark-controls,
 .frame-controls {
   display: flex;
   justify-content: center;
@@ -182,46 +183,46 @@ input[type="file"] {
   flex: 1 1 120px;
   max-width: 140px;
   min-width: 60px;
-  padding: 12px 0;
-  font-size: 16px;
-  border-radius: 8px;
-  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  border-radius: 12px;
   cursor: pointer;
-  background: linear-gradient(135deg, #00d8ff, #0066cc);
+  background: #0078d4;
   color: white;
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 216, 255, 0.6);
-  transition: background 0.3s ease, transform 0.15s ease;
+  box-shadow: none;
+  transition: background 0.2s ease;
   user-select: none;
+  font-family: inherit;
 }
 
 .frame-controls button:hover,
 .mark-controls button:hover {
-  background: linear-gradient(135deg, #0066cc, #00d8ff);
-  transform: scale(1.05);
+  background: #005a9e;
 }
 
 .frame-controls button:active,
 .mark-controls button:active {
-  transform: scale(0.95);
+  background: #004578;
 }
-
 
 /* Status und Ergebnis */
 
 #status {
-  margin-top: 15px;
+  margin-top: 8px;
   font-size: 14px;
-  color: #00ffea;
+  color: #0078d4;
   min-height: 20px;
+  font-weight: 500;
 }
 
 #result {
-  margin-top: 8px;
+  margin-top: 0px;
   font-size: 20px;
-  font-weight: 700;
-  color: #00d8ff;
+  font-weight: 600;
+  color: #0078d4;
   min-height: 28px;
+  text-align: center;
 }
 
 /* Erklärung */
@@ -229,11 +230,13 @@ input[type="file"] {
 .explanation-section {
   margin-top: 40px;
   text-align: left;
-  background: rgba(0, 216, 255, 0.1);
-  border-radius: 8px;
+  background: #f0f4f8;
+  border-radius: 12px;
   padding: 20px;
-  color: #cceeff;
-  font-size: 15px;
+  color: #3a3a3a;
+  font-size: 14px;
+  font-weight: 400;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 .explanation-section ol {
