@@ -46,7 +46,7 @@ body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 0 20px 30px 20px;
   padding-top: 0;
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   background: #f5f7fa; /* helles, neutrales Grau */
   color: #1a1a1a; /* dunkles Grau statt reinem Schwarz */
@@ -317,3 +317,120 @@ input[type="number"] {
   padding-left: 20px;
   margin-top: 10px;
 }
+
+/* Responsive tweaks */
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 14px;
+  }
+
+  .navbar h1 {
+    font-size: 1.25rem;
+  }
+
+  body {
+    padding: 0 14px 30px 14px;
+  }
+
+  .upload-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .file-label {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .reach-group input[type="number"],
+  .fps-group select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .frame-controls button,
+  .mark-controls button {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    padding: 12px 8px;
+    font-size: 15px;
+  }
+
+  video {
+    max-height: none;
+  }
+
+  .explanation-section {
+    padding: 16px;
+  }
+
+  footer {
+    padding: 12px 8px;
+  }
+
+  .navbar iframe {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar h1 {
+    font-size: 1.1rem;
+  }
+
+  .navbar {
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .navbar iframe {
+    order: 2;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .file-label,
+  button,
+  input[type="number"],
+  .fps-group select {
+    font-size: 16px;
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+    margin-top: 24px;
+  }
+
+  #result {
+    font-size: 18px;
+  }
+
+  body {
+    padding: 0 12px 24px 12px;
+  }
+
+  .frame-controls,
+  .mark-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Accessibility: visible focus for keyboard users */
+button:focus,
+.file-label:focus,
+input:focus,
+select:focus {
+  outline: 3px solid rgba(0,120,212,0.18);
+  outline-offset: 2px;
+}
+
