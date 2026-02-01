@@ -10,7 +10,7 @@ const buttons = {
   markStart: document.getElementById('markStart'),
   markEnd: document.getElementById('markEnd'),
   calculate: document.getElementById('calculate'),
-};·
+};
 
 const indicators = {
   start: document.getElementById('markStartIndicator'),
