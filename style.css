@@ -44,15 +44,19 @@
 
 body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  padding: 0 20px 30px 20px;
-  padding-top: 0;
-  max-width: 900px;
-  margin: 0 auto;
+  margin: 0;
   background: #f5f7fa; /* helles, neutrales Grau */
   color: #1a1a1a; /* dunkles Grau statt reinem Schwarz */
   text-align: left;
   line-height: 1.6;
   font-weight: 400;
+}
+
+main {
+  padding: 0 20px 30px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 h1 {
@@ -189,6 +193,7 @@ input[type="number"] {
   align-items: center;
   gap: 24px;
   margin-top: 40px;
+  margin-bottom: 18px;
 }
 
 /* Standing Reach Group */
@@ -329,8 +334,8 @@ input[type="number"] {
     font-size: 1.25rem;
   }
 
-  body {
-    padding: 0 14px 30px 14px;
+  .navbar iframe {
+    padding-right: 30px;
   }
 
   .upload-section {
@@ -349,7 +354,7 @@ input[type="number"] {
 
   .reach-group input[type="number"],
   .fps-group select {
-    width: 100%;
+    width: 90%;
     max-width: none;
   }
 
@@ -414,14 +419,65 @@ input[type="number"] {
     font-size: 18px;
   }
 
-  body {
+  main {
     padding: 0 12px 24px 12px;
   }
 
-  .frame-controls,
+  .frame-controls {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    justify-content: center;
+  }
+
   .mark-controls {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .fps-group {
+    margin-bottom: 12px;
+  }
+
+  .video-section {
+    margin-top: 12px;
+  }
+}
+
+@media (min-width: 769px) {
+  .upload-section {
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .file-label,
+  .reach-group,
+  .fps-group {
+    flex: 0 0 28%;
+    max-width: 320px;
+    box-sizing: border-box;
+  }
+
+  .file-label {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+  .reach-group {
+    align-items: center;
+  }
+
+  .fps-group {
+    align-items: center;
+    margin-bottom: 0;
+    margin-left: 12px;
+  }
+
+  .video-section {
+    margin-top: 18px;
   }
 }
 
