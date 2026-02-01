@@ -23,7 +23,22 @@
     <section class="upload-section">
       <label for="upload" class="file-label" role="button" tabindex="0">Choose Video</label>
       <input type="file" accept="video/*" id="upload" aria-describedby="uploadHelp" />
-      <small id="uploadHelp">Select a video file to analyze your vertical jump.</small>
+      <div class="reach-group">
+        <label for="reach">Standing Reach (cm)</label>
+        <input type="number" id="reach" placeholder="e.g. 230" />
+      </div>
+      <div class="fps-group">
+      <label for="fpsSelect">Video FPS</label>
+      <select id="fpsSelect">
+      <option value="auto">Auto detect</option>
+      <option value="24">24 fps</option>
+      <option value="30" selected>30 fps</option>
+      <option value="60">60 fps</option>
+      <option value="120">120 fps</option>
+      <option value="240">240 fps</option>
+    </select>
+  </div>
+
     </section>
 
     <section class="video-section">
@@ -41,6 +56,7 @@
         <button id="backward" aria-label="Skip back 1 frame">« -1</button>
         <button id="forward" aria-label="Skip forward 1 frame">+1 »</button>
         <button id="forward10" aria-label="Skip forward 10 frames">+10 »»</button>
+        <p id="fpsDisplay">Wait for FPS</p>
       </div>
 
       <div class="mark-controls" aria-live="polite">
@@ -51,7 +67,7 @@
 
       <p id="status" aria-live="assertive" class="status-text">Test</p>
       <h2>Result: </h2>
-      <p id="result" class="result-text">No result jet</p>
+      <p id="result" class="result-text">No result yet...</p>
     </section>
 
     <section class="explanation-section">
@@ -59,11 +75,11 @@
       <p>This tool helps you calculate your jump height from a video.</p>
       <ol>
         <li>Upload a video showing your jump.</li>
-        <li>Use the frame buttons to find the exact takeoff point and mark it with "Mark Start".</li>
-        <li>Then find the landing point and mark it with "Mark End".</li>
+        <li>Use the frame buttons to find the last frame where the foot touches the ground and mark it with "Mark Start".</li>
+        <li>Then find the frame where the foot contacts the ground again and mark it with "Mark End".</li>
         <li>Press "Calculate Jump Height" to get the result.</li>
       </ol>
-      <p>The program calculates the flight time between start and landing and determines your jump height from that.</p>
+      <p>The program calculates the flight time between start and landing and determines your jump hight using the formular (g * t²) / 8.</p>
     </section>
   </main>
 

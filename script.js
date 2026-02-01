@@ -1,141 +1,201 @@
+// ---------- DOM ----------
 const upload = document.getElementById('upload');
 const video = document.getElementById('video');
-const backBtn = document.getElementById('backward');
-const forwardBtn = document.getElementById('forward');
-const markStartBtn = document.getElementById('markStart');
-const markEndBtn = document.getElementById('markEnd');
-const calculateBtn = document.getElementById('calculate');
-const result = document.getElementById('result');
+
+const buttons = {
+  back: document.getElementById('backward'),
+  forward: document.getElementById('forward'),
+  back10: document.getElementById('backward10'),
+  forward10: document.getElementById('forward10'),
+  markStart: document.getElementById('markStart'),
+  markEnd: document.getElementById('markEnd'),
+  calculate: document.getElementById('calculate'),
+};
+
+const indicators = {
+  start: document.getElementById('markStartIndicator'),
+  end: document.getElementById('markEndIndicator'),
+  current: document.getElementById('currentPosIndicator'),
+};
+
+const fpsDisplay = document.getElementById('fpsDisplay');
+const fpsAutoOption = document.getElementById('fpsAutoOption');
+const fpsSelect = document.getElementById('fpsSelect');
+const standingReach = document.getElementById('reach');
 const status = document.getElementById('status');
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-const back10Btn = document.getElementById('backward10');
-const forward10Btn = document.getElementById('forward10');
-const currentPosIndicator = document.getElementById('currentPosIndicator');
+const result = document.getElementById('result');
 
-const markStartIndicator = document.getElementById('markStartIndicator');
-const markEndIndicator = document.getElementById('markEndIndicator');
-
+// ---------- Constants ----------
 const g = 9.81;
 
+// ---------- State ----------
 let jumpStartTime = null;
 let jumpEndTime = null;
-let fps = 30; // Default FPS fallback
 
-// Video laden und FPS bestimmen wenn möglich
-upload.addEventListener('change', () => {
-  const file = upload.files[0];
-  if (!file) return;
+let fps = 30;
+let autoFps = null;
 
-  const url = URL.createObjectURL(file);
-  video.src = url;
-  video.load();
-  video.pause();
-
+// ---------- Helpers ----------
+function resetMarks() {
   jumpStartTime = null;
   jumpEndTime = null;
   updateMarks();
+}
 
-  // Versuche FPS zu bestimmen (funktioniert nicht in allen Browsern)
-  video.addEventListener('loadedmetadata', () => {
-    // Manche Videos haben 'video.playbackRate', aber keine FPS-Daten direkt
-    // Alternativ kann FPS über Dauer & Anzahl Frames geschätzt werden, aber hier keine einfache Lösung.
-    // Für zuverlässige Werte müsste man externe Libs nutzen oder Input abfragen.
-    // Daher hier nur ein Hinweis.
-    // fps bleibt 30 als Default.
-  }, { once: true });
-});
+function setStatus(text = '') {
+  status.textContent = text;
+}
+
+function setResult(text = '') {
+  result.textContent = text;
+}
 
 function skipFrames(frames) {
   video.pause();
-  const frameDuration = 1 / fps;
-  let newTime = video.currentTime + frames * frameDuration;
-
-  if (newTime < 0) newTime = 0;
-  if (newTime > video.duration) newTime = video.duration;
-
-  video.currentTime = newTime;
+  const dt = frames / fps;
+  video.currentTime = Math.min(
+    Math.max(video.currentTime + dt, 0),
+    video.duration || 0
+  );
 }
 
-backBtn.addEventListener('click', () => skipFrames(-1));
-forwardBtn.addEventListener('click', () => skipFrames(1));
+function estimateFPS(video, samples = 20) {
+  return new Promise(resolve => {
+    let lastTime = null;
+    let deltas = [];
+    let count = 0;
 
-back10Btn.addEventListener('click', () => skipFrames(-10));
-forward10Btn.addEventListener('click', () => skipFrames(10));
+    function step(now, metadata) {
+      if (lastTime !== null) {
+        deltas.push(metadata.mediaTime - lastTime);
+        count++;
+      }
+      lastTime = metadata.mediaTime;
 
-markStartBtn.addEventListener('click', () => {
+      if (count >= samples) {
+        const avgDelta =
+          deltas.reduce((a, b) => a + b, 0) / deltas.length;
+        resolve(1 / avgDelta);
+        return;
+      }
+      video.requestVideoFrameCallback(step);
+    }
+
+    video.requestVideoFrameCallback(step);
+  });
+}
+
+// ---------- Video ----------
+upload.addEventListener('change', async () => {
+  const file = upload.files[0];
+  if (!file) return;
+
+  video.src = URL.createObjectURL(file);
+  await video.play();
+  video.pause();
+
+  autoFps = await estimateFPS(video);
+  if (fpsSelect.value === 'auto') {
+    fps = autoFps ? autoFps : 30;
+  }
+
+  resetMarks();
+  setResult();
+  setStatus();
+});
+
+video.addEventListener('timeupdate', updateIndicators);
+
+// ---------- Buttons ----------
+buttons.back.addEventListener('click', () => skipFrames(-1));
+buttons.forward.addEventListener('click', () => skipFrames(1));
+buttons.back10.addEventListener('click', () => skipFrames(-10));
+buttons.forward10.addEventListener('click', () => skipFrames(10));
+
+buttons.markStart.addEventListener('click', () => {
   jumpStartTime = video.currentTime;
-  status.textContent = `Start time marked at ${jumpStartTime.toFixed(2)} seconds`;
-  result.textContent = '';
+  setStatus(`Start marked at ${jumpStartTime.toFixed(2)} s`);
+  setResult();
   updateMarks();
 });
 
-markEndBtn.addEventListener('click', () => {
+buttons.markEnd.addEventListener('click', () => {
   jumpEndTime = video.currentTime;
-  status.textContent = `End time marked at ${jumpEndTime.toFixed(2)} seconds`;
-  result.textContent = '';
+  setStatus(`End marked at ${jumpEndTime.toFixed(2)} s`);
+  setResult();
   updateMarks();
 });
 
-calculateBtn.addEventListener('click', () => {
+buttons.calculate.addEventListener('click', calculateJump);
+
+// ---------- Calculation ----------
+function calculateJump() {
   if (jumpStartTime === null || jumpEndTime === null) {
-    status.textContent = 'Bitte zuerst Start- und Endzeit markieren.';
-    result.textContent = '';
+    setStatus('Mark start and end first.');
     return;
   }
 
   const flightTime = jumpEndTime - jumpStartTime;
   if (flightTime <= 0) {
-    status.textContent = 'Endzeit muss nach Startzeit liegen.';
-    result.textContent = '';
+    setStatus('End must be after start.');
     return;
   }
 
-  const jumpHeight = (g * flightTime * flightTime) / 8;
+  const jumpHeight = (g * flightTime ** 2) / 8;
+  const takeoffVelocity = (g * flightTime) / 2;
 
-  status.textContent = '';
-  result.textContent = `Jump height: ${jumpHeight.toFixed(2)} meters`;
+  const jumpHeightCm = jumpHeight * 100;
+  const reachCm = Number(standingReach.value) || 0;
 
-  // Markierungen zurücksetzen, damit keine Fehler beim nächsten Versuch
-  jumpStartTime = null;
-  jumpEndTime = null;
-  updateMarks();
-});
+  setStatus();
+  setResult(
+    `Time of flight: ${flightTime.toFixed(2)} s\n` +
+    `Takeoff velocity: ${takeoffVelocity.toFixed(2)} m/s\n` +
+    `Jump height: ${jumpHeightCm.toFixed(1)} cm\n` +
+    `Estimated max reach: ${(jumpHeightCm + reachCm).toFixed(1)} cm`
+  );
 
-// Visualisiere Markierungen als Balken unter Video
+  resetMarks();
+}
+
+// ---------- Indicators ----------
 function updateMarks() {
-  if (!video.duration || video.duration === Infinity) {
-    // Kein Video geladen oder Dauer unbekannt
-    markStartIndicator.hidden = true;
-    markEndIndicator.hidden = true;
-    return;
-  }
+  if (!video.duration) return hideIndicators();
 
-  if (jumpStartTime !== null) {
-    markStartIndicator.style.left = (jumpStartTime / video.duration) * 100 + '%';
-    markStartIndicator.hidden = false;
-  } else {
-    markStartIndicator.hidden = true;
-  }
-
-  if (jumpEndTime !== null) {
-    markEndIndicator.style.left = (jumpEndTime / video.duration) * 100 + '%';
-    markEndIndicator.hidden = false;
-  } else {
-    markEndIndicator.hidden = true;
-  }
+  toggleIndicator(indicators.start, jumpStartTime);
+  toggleIndicator(indicators.end, jumpEndTime);
 }
 
-function updateCurrentPosition() {
-  if (!video.duration || video.duration === Infinity) {
-    currentPosIndicator.hidden = true;
-    return;
-  }
-  currentPosIndicator.style.left = (video.currentTime / video.duration) * 100 + '%';
-  currentPosIndicator.hidden = false;
-}
+function updateIndicators() {
+  if (!video.duration) return hideIndicators();
 
-video.addEventListener('timeupdate', () => {
-  updateCurrentPosition();
+  indicators.current.style.left =
+    (video.currentTime / video.duration) * 100 + '%';
+  indicators.current.hidden = false;
+
   updateMarks();
+}
+
+function toggleIndicator(el, time) {
+  if (time === null) {
+    el.hidden = true;
+    return;
+  }
+  el.style.left = (time / video.duration) * 100 + '%';
+  el.hidden = false;
+}
+
+function hideIndicators() {
+  Object.values(indicators).forEach(i => (i.hidden = true));
+}
+
+fpsSelect.addEventListener('change', () => {
+  if (fpsSelect.value === 'auto') {
+    fps = autoFps ? autoFps : 30;
+  } else {
+    fps = Number(fpsSelect.value);
+  }
+
+  fpsDisplay.textContent = `${fps} fps`;
+
 });
