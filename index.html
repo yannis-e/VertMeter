@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>VertMeter</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+
+  <header class="navbar">
+    <h1>VertMeter</h1>
+  </header>
+
+  <main>
+    <section class="upload-section">
+      <label for="upload" class="file-label" role="button" tabindex="0">Choose Video</label>
+      <input type="file" accept="video/*" id="upload" aria-describedby="uploadHelp" />
+      <small id="uploadHelp">Select a video file to analyze your vertical jump.</small>
+    </section>
+
+    <section class="video-section">
+      <video id="video" aria-label="Uploaded video"></video>
+      <div class="timeline-marks" aria-hidden="true">
+        <div id="markStartIndicator" class="mark-indicator start-indicator" hidden></div>
+        <div id="markEndIndicator" class="mark-indicator end-indicator" hidden></div>
+        <div id="currentPosIndicator" class="mark-indicator current-pos-indicator" hidden></div>
+      </div>
+    </section>
+
+    <section class="controls-section" aria-label="Video Controls">
+      <div class="frame-controls">
+        <button id="backward10" aria-label="Skip back 10 frames">«« -10</button>
+        <button id="backward" aria-label="Skip back 1 frame">« -1</button>
+        <button id="forward" aria-label="Skip forward 1 frame">+1 »</button>
+        <button id="forward10" aria-label="Skip forward 10 frames">+10 »»</button>
+      </div>
+
+      <div class="mark-controls" aria-live="polite">
+        <button id="markStart">Mark Start</button>
+        <button id="markEnd">Mark End</button>
+        <button id="calculate">Calculate Jump Height</button>
+      </div>
+
+      <p id="status" aria-live="assertive" class="status-text"></p>
+      <p id="result" class="result-text"></p>
+    </section>
+
+    <section class="explanation-section">
+      <h2>How does VertMeter work?</h2>
+      <p>This tool helps you calculate your jump height from a video.</p>
+      <ol>
+        <li>Upload a video showing your jump.</li>
+        <li>Use the frame buttons to find the exact takeoff point and mark it with "Mark Start".</li>
+        <li>Then find the landing point and mark it with "Mark End".</li>
+        <li>Press "Calculate Jump Height" to get the result.</li>
+      </ol>
+      <p>The program calculates the flight time between start and landing and determines your jump height from that.</p>
+      <p>Use the timeline indicators to better see the marked positions.</p>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
