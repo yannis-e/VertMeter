@@ -69,6 +69,10 @@ h2 {
   font-size: 1.3rem;
 }
 
+a {
+  color: #0078d4;
+}
+
 /* Video */
 
 video {
