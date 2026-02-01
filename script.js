@@ -10,7 +10,7 @@ const buttons = {
   markStart: document.getElementById('markStart'),
   markEnd: document.getElementById('markEnd'),
   calculate: document.getElementById('calculate'),
-};
+};·
 
 const indicators = {
   start: document.getElementById('markStartIndicator'),
@@ -18,8 +18,6 @@ const indicators = {
   current: document.getElementById('currentPosIndicator'),
 };
 
-const fpsDisplay = document.getElementById('fpsDisplay');
-const fpsAutoOption = document.getElementById('fpsAutoOption');
 const fpsSelect = document.getElementById('fpsSelect');
 const standingReach = document.getElementById('reach');
 const status = document.getElementById('status');
@@ -29,17 +27,20 @@ const result = document.getElementById('result');
 const g = 9.81;
 
 // ---------- State ----------
-let jumpStartTime = null;
-let jumpEndTime = null;
+let startFrame = null;
+let endFrame = null;
 
-let fps = 30;
-let autoFps = null;
+let fps = Number(fpsSelect.value) || 30; // initial von Dropdown
 
 // ---------- Helpers ----------
 function resetMarks() {
-  jumpStartTime = null;
-  jumpEndTime = null;
+  startFrame = null;
+  endFrame = null;
   updateMarks();
+}
+
+function currentFrame() {
+  return Math.round(video.currentTime * fps);
 }
 
 function setStatus(text = '') {
@@ -59,45 +60,14 @@ function skipFrames(frames) {
   );
 }
 
-function estimateFPS(video, samples = 20) {
-  return new Promise(resolve => {
-    let lastTime = null;
-    let deltas = [];
-    let count = 0;
-
-    function step(now, metadata) {
-      if (lastTime !== null) {
-        deltas.push(metadata.mediaTime - lastTime);
-        count++;
-      }
-      lastTime = metadata.mediaTime;
-
-      if (count >= samples) {
-        const avgDelta =
-          deltas.reduce((a, b) => a + b, 0) / deltas.length;
-        resolve(1 / avgDelta);
-        return;
-      }
-      video.requestVideoFrameCallback(step);
-    }
-
-    video.requestVideoFrameCallback(step);
-  });
-}
-
 // ---------- Video ----------
-upload.addEventListener('change', async () => {
+upload.addEventListener('change', () => {
   const file = upload.files[0];
   if (!file) return;
 
   video.src = URL.createObjectURL(file);
-  await video.play();
+  video.load();
   video.pause();
-
-  autoFps = await estimateFPS(video);
-  if (fpsSelect.value === 'auto') {
-    fps = autoFps ? autoFps : 30;
-  }
 
   resetMarks();
   setResult();
@@ -113,15 +83,15 @@ buttons.back10.addEventListener('click', () => skipFrames(-10));
 buttons.forward10.addEventListener('click', () => skipFrames(10));
 
 buttons.markStart.addEventListener('click', () => {
-  jumpStartTime = video.currentTime;
-  setStatus(`Start marked at ${jumpStartTime.toFixed(2)} s`);
+  startFrame = currentFrame();
+  setStatus(`Start marked at frame ${startFrame}`);
   setResult();
   updateMarks();
 });
 
 buttons.markEnd.addEventListener('click', () => {
-  jumpEndTime = video.currentTime;
-  setStatus(`End marked at ${jumpEndTime.toFixed(2)} s`);
+  endFrame = currentFrame();
+  setStatus(`End marked at frame ${endFrame}`);
   setResult();
   updateMarks();
 });
@@ -130,12 +100,14 @@ buttons.calculate.addEventListener('click', calculateJump);
 
 // ---------- Calculation ----------
 function calculateJump() {
-  if (jumpStartTime === null || jumpEndTime === null) {
+  if (startFrame === null || endFrame === null) {
     setStatus('Mark start and end first.');
     return;
   }
 
-  const flightTime = jumpEndTime - jumpStartTime;
+  const frameCount = endFrame - startFrame;
+  const flightTime = frameCount / fps;
+
   if (flightTime <= 0) {
     setStatus('End must be after start.');
     return;
@@ -162,8 +134,8 @@ function calculateJump() {
 function updateMarks() {
   if (!video.duration) return hideIndicators();
 
-  toggleIndicator(indicators.start, jumpStartTime);
-  toggleIndicator(indicators.end, jumpEndTime);
+  toggleIndicator(indicators.start, startFrame !== null ? startFrame / fps : null);
+  toggleIndicator(indicators.end, endFrame !== null ? endFrame / fps : null);
 }
 
 function updateIndicators() {
@@ -189,13 +161,7 @@ function hideIndicators() {
   Object.values(indicators).forEach(i => (i.hidden = true));
 }
 
+// ---------- FPS Dropdown ----------
 fpsSelect.addEventListener('change', () => {
-  if (fpsSelect.value === 'auto') {
-    fps = autoFps ? autoFps : 30;
-  } else {
-    fps = Number(fpsSelect.value);
-  }
-
-  fpsDisplay.textContent = `${fps} fps`;
-
+  fps = Number(fpsSelect.value);
 });
